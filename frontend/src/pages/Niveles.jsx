@@ -1,0 +1,95 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { api } from "../api";
+import { useAuth } from "../context/AuthContext";
+
+export default function Niveles() {
+  const { token, logout } = useAuth();
+  const [niveles, setNiveles] = useState([]);
+  const [progreso, setProgreso] = useState([]);
+  const [cargando, setCargando] = useState(true);
+
+  useEffect(() => {
+    Promise.all([api.listarNiveles(token), api.miProgreso(token)])
+      .then(([niv, prog]) => {
+        setNiveles(niv);
+        setProgreso(prog);
+      })
+      .finally(() => setCargando(false));
+  }, [token]);
+
+  function completadasEnNivel(nivel) {
+    const idsActividades = nivel.actividades.map((a) => a.id);
+    return progreso.filter(
+      (p) => idsActividades.includes(p.actividad_id) && p.estado === "completado"
+    ).length;
+  }
+
+  if (cargando) return <p className="loading">Cargando niveles...</p>;
+
+  const totalActividades = niveles.reduce((acc, n) => acc + n.actividades.length, 0);
+  const totalCompletadas = niveles.reduce((acc, n) => acc + completadasEnNivel(n), 0);
+  const mensajeMascota =
+    totalCompletadas === 0
+      ? "¡Vamos, elige un nivel y empecemos!"
+      : totalCompletadas === totalActividades && totalActividades > 0
+        ? "¡Completaste todo! Eres un Guardián de verdad."
+        : "¡Vas muy bien, sigue así!";
+
+  return (
+    <div className="page">
+      <header className="page-header">
+        <div className="brand-companion">
+          <img src="/brand/logo.png" alt="Modelo CREA" className="brand-logo" />
+          <div className="mascota-companion">
+            <img src="/brand/mascota.png" alt="" aria-hidden="true" />
+            <span className="mascota-burbuja">{mensajeMascota}</span>
+          </div>
+        </div>
+        <button className="link-button" onClick={logout}>
+          Cerrar sesión
+        </button>
+      </header>
+
+      <div className="niveles-grid">
+        {niveles.map((nivel) => {
+          const total = nivel.actividades.length;
+          const completadas = completadasEnNivel(nivel);
+          const disponible = nivel.estado === "completo" && total > 0;
+
+          return (
+            <Link
+              key={nivel.id}
+              to={disponible ? `/niveles/${nivel.id}` : "#"}
+              className={`nivel-card ${disponible ? "" : "nivel-card--disabled"}`}
+              onClick={(e) => !disponible && e.preventDefault()}
+            >
+              {disponible && total > 0 && completadas === total && (
+                <img src="/brand/badge.png" alt="Nivel completado" className="nivel-badge-icono" />
+              )}
+              <span className="nivel-numero">Nivel {nivel.numero}</span>
+              <h2>{nivel.nombre}</h2>
+              {nivel.principio && <p className="nivel-principio">{nivel.principio}</p>}
+
+              {disponible ? (
+                <div className="nivel-progreso">
+                  <div className="barra">
+                    <div
+                      className="barra-relleno"
+                      style={{ width: `${total ? (completadas / total) * 100 : 0}%` }}
+                    />
+                  </div>
+                  <span>
+                    {completadas}/{total} actividades
+                  </span>
+                </div>
+              ) : (
+                <span className="badge-gap">Próximamente</span>
+              )}
+            </Link>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
