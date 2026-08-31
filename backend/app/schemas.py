@@ -53,6 +53,7 @@ class NivelOut(BaseModel):
     competencia: str | None
     estado: NivelEstado
     codigo: str | None
+    orden_ruta: float | None
     duracion_minutos: int | None
     momento: str | None
     es_transversal: bool

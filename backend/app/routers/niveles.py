@@ -16,7 +16,7 @@ def listar_niveles(
     return (
         db.query(Nivel)
         .options(joinedload(Nivel.actividades))
-        .order_by(Nivel.numero)
+        .order_by(Nivel.orden_ruta, Nivel.numero)
         .all()
     )
 

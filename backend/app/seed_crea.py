@@ -770,30 +770,35 @@ NIVELES = [
 RUTA_METADATA = {
     1: {
         "codigo": "M1",
+        "orden_ruta": 1,
         "duracion_minutos": 12,
         "momento": "pre_sala",
         "conexion_sala": "Activa el concepto antes de la actividad presencial de contraste del Nivel 1.",
     },
     2: {
         "codigo": "M2",
+        "orden_ruta": 2,
         "duracion_minutos": 12,
         "momento": "pre_sala",
         "conexion_sala": "Prepara el vocabulario de validación específica para El Termómetro Emocional.",
     },
     3: {
         "codigo": "M3",
+        "orden_ruta": 4,
         "duracion_minutos": 10,
         "momento": "pre_sala",
         "conexion_sala": "Deja la teoría lista para practicar indagación y escucha activa en sala.",
     },
     4: {
         "codigo": "M4",
+        "orden_ruta": 5,
         "duracion_minutos": 10,
         "momento": "pre_sala",
         "conexion_sala": "Prepara la lectura del pasajero antes del Radar de Frustración.",
     },
     5: {
         "codigo": "M5",
+        "orden_ruta": 6,
         "duracion_minutos": 15,
         "momento": "pre_sala",
         "conexion_sala": "El e-learning refuerza el Protocolo RND; la certificación requiere práctica presencial.",
@@ -801,17 +806,64 @@ RUTA_METADATA = {
     },
     6: {
         "codigo": "M6",
+        "orden_ruta": 7,
         "duracion_minutos": 10,
         "momento": "pre_sala",
         "conexion_sala": "Acelera la práctica presencial de transformar ambigüedad en claridad.",
     },
     7: {
         "codigo": "M7",
+        "orden_ruta": 8,
         "duracion_minutos": 12,
         "momento": "post_sala",
         "conexion_sala": "Refuerza después de la simulación capstone y la documentación del Resumen de Caso.",
         "requiere_certificacion_presencial": True,
     },
+}
+
+EJE_INTERCULTURAL = {
+    "numero": 25,
+    "nombre": "Sensibilidad intercultural",
+    "principio": "Adaptar la comunicación al contexto del pasajero",
+    "objetivo": "Reconocer diferencias entre culturas de alto y bajo contexto y adaptar la comunicación.",
+    "competencia": "Sensibilidad intercultural",
+    "estado": NivelEstado.completo,
+    "codigo": "EJE",
+    "orden_ruta": 3,
+    "duracion_minutos": 8,
+    "momento": "pre_sala",
+    "es_transversal": True,
+    "conexion_sala": "Da contexto antes de las notas de adaptación intercultural de la formación presencial.",
+    "actividades": [
+        {
+            "tipo": ActividadTipo.interactiva,
+            "titulo": "Tarjetas: alto y bajo contexto",
+            "contenido": {
+                "descripcion": "Lee cada tarjeta y clasifica el estilo de comunicación predominante.",
+                "tipo_interactivo": "clasificador",
+                "opciones": [
+                    {"clave": "alto_contexto", "label": "Alto contexto", "emoji": "🌎"},
+                    {"clave": "bajo_contexto", "label": "Bajo contexto", "emoji": "🗣️"},
+                ],
+                "items": [
+                    {"texto": "Espera que el agente interprete señales implícitas y la relación.", "correcta": "alto_contexto"},
+                    {"texto": "Expresa directamente lo que necesita y el resultado esperado.", "correcta": "bajo_contexto"},
+                ],
+            },
+        },
+        {
+            "tipo": ActividadTipo.quiz,
+            "titulo": "Quiz de sensibilidad intercultural",
+            "contenido": {"descripcion": "Comprueba cómo adaptar claridad y tono sin estereotipar al pasajero."},
+            "preguntas": [
+                {
+                    "enunciado": "¿Qué debe hacer el agente ante una expectativa expresada de forma indirecta?",
+                    "opciones": {"a": "Ignorarla", "b": "Confirmar con respeto lo que el pasajero necesita", "c": "Asumir el significado"},
+                    "respuesta_correcta": "b",
+                }
+            ],
+        },
+    ],
 }
 
 QUIZ_CREA = {
@@ -837,7 +889,15 @@ def seed() -> None:
         db.query(Nivel).delete()
         db.commit()
 
-        for nivel_data in NIVELES:
+        for nivel_data in [*NIVELES[:2], EJE_INTERCULTURAL, *NIVELES[2:]]:
+            ruta_meta = {
+                **RUTA_METADATA.get(nivel_data["numero"], {}),
+                **{
+                    key: nivel_data[key]
+                    for key in ("codigo", "orden_ruta", "duracion_minutos", "momento", "es_transversal", "requiere_certificacion_presencial", "conexion_sala")
+                    if key in nivel_data
+                },
+            }
             nivel = Nivel(
                 numero=nivel_data["numero"],
                 nombre=nivel_data["nombre"],
@@ -845,31 +905,12 @@ def seed() -> None:
                 objetivo=nivel_data["objetivo"],
                 competencia=nivel_data["competencia"],
                 estado=nivel_data["estado"],
-                **RUTA_METADATA.get(nivel_data["numero"], {}),
+                **ruta_meta,
             )
             db.add(nivel)
             db.flush()
 
             actividades = list(nivel_data["actividades"])
-            if nivel_data["numero"] == 2:
-                actividades.append(
-                    {
-                        "tipo": ActividadTipo.interactiva,
-                        "titulo": "Eje transversal: sensibilidad intercultural",
-                        "contenido": {
-                            "descripcion": "Tarjetas breves para adaptar la comunicación a pasajeros de alto y bajo contexto.",
-                            "tipo_interactivo": "clasificador",
-                            "opciones": [
-                                {"clave": "alto_contexto", "label": "Alto contexto", "emoji": "🌎"},
-                                {"clave": "bajo_contexto", "label": "Bajo contexto", "emoji": "🗣️"},
-                            ],
-                            "items": [
-                                {"texto": "El pasajero espera que el agente lea señales implícitas y contexto.", "correcta": "alto_contexto"},
-                                {"texto": "El pasajero expresa de forma directa lo que necesita y espera.", "correcta": "bajo_contexto"},
-                            ],
-                        },
-                    }
-                )
             if nivel_data["numero"] == 5:
                 actividades.extend(
                     [

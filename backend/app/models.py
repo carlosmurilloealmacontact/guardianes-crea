@@ -4,6 +4,7 @@ from datetime import datetime
 from sqlalchemy import (
     DateTime,
     Enum,
+    Float,
     ForeignKey,
     Integer,
     Boolean,
@@ -73,6 +74,7 @@ class Nivel(Base):
     competencia: Mapped[str | None] = mapped_column(Text, nullable=True)
     estado: Mapped[NivelEstado] = mapped_column(Enum(NivelEstado), default=NivelEstado.gap)
     codigo: Mapped[str | None] = mapped_column(String(40), nullable=True, unique=True)
+    orden_ruta: Mapped[float | None] = mapped_column(Float, nullable=True)
     duracion_minutos: Mapped[int | None] = mapped_column(Integer, nullable=True)
     momento: Mapped[str | None] = mapped_column(String(30), nullable=True)
     es_transversal: Mapped[bool] = mapped_column(Boolean, default=False)

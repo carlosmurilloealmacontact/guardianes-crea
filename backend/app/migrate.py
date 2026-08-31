@@ -20,6 +20,7 @@ def migrate() -> None:
             "es_transversal": "BOOLEAN NOT NULL DEFAULT FALSE",
             "requiere_certificacion_presencial": "BOOLEAN NOT NULL DEFAULT FALSE",
             "conexion_sala": "TEXT",
+            "orden_ruta": "DOUBLE PRECISION",
         }
         for column, definition in nivel_additions.items():
             if column not in nivel_columns:
