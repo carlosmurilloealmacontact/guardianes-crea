@@ -767,6 +767,53 @@ NIVELES = [
     },
 ]
 
+RUTA_METADATA = {
+    1: {
+        "codigo": "M1",
+        "duracion_minutos": 12,
+        "momento": "pre_sala",
+        "conexion_sala": "Activa el concepto antes de la actividad presencial de contraste del Nivel 1.",
+    },
+    2: {
+        "codigo": "M2",
+        "duracion_minutos": 12,
+        "momento": "pre_sala",
+        "conexion_sala": "Prepara el vocabulario de validación específica para El Termómetro Emocional.",
+    },
+    3: {
+        "codigo": "M3",
+        "duracion_minutos": 10,
+        "momento": "pre_sala",
+        "conexion_sala": "Deja la teoría lista para practicar indagación y escucha activa en sala.",
+    },
+    4: {
+        "codigo": "M4",
+        "duracion_minutos": 10,
+        "momento": "pre_sala",
+        "conexion_sala": "Prepara la lectura del pasajero antes del Radar de Frustración.",
+    },
+    5: {
+        "codigo": "M5",
+        "duracion_minutos": 15,
+        "momento": "pre_sala",
+        "conexion_sala": "El e-learning refuerza el Protocolo RND; la certificación requiere práctica presencial.",
+        "requiere_certificacion_presencial": True,
+    },
+    6: {
+        "codigo": "M6",
+        "duracion_minutos": 10,
+        "momento": "pre_sala",
+        "conexion_sala": "Acelera la práctica presencial de transformar ambigüedad en claridad.",
+    },
+    7: {
+        "codigo": "M7",
+        "duracion_minutos": 12,
+        "momento": "post_sala",
+        "conexion_sala": "Refuerza después de la simulación capstone y la documentación del Resumen de Caso.",
+        "requiere_certificacion_presencial": True,
+    },
+}
+
 
 def seed() -> None:
     Base.metadata.create_all(bind=engine)
@@ -788,11 +835,70 @@ def seed() -> None:
                 objetivo=nivel_data["objetivo"],
                 competencia=nivel_data["competencia"],
                 estado=nivel_data["estado"],
+                **RUTA_METADATA.get(nivel_data["numero"], {}),
             )
             db.add(nivel)
             db.flush()
 
-            for orden, actividad_data in enumerate(nivel_data["actividades"], start=1):
+            actividades = list(nivel_data["actividades"])
+            if nivel_data["numero"] == 2:
+                actividades.append(
+                    {
+                        "tipo": ActividadTipo.interactiva,
+                        "titulo": "Eje transversal: sensibilidad intercultural",
+                        "contenido": {
+                            "descripcion": "Tarjetas breves para adaptar la comunicación a pasajeros de alto y bajo contexto.",
+                            "tipo_interactivo": "clasificador",
+                            "opciones": [
+                                {"clave": "alto_contexto", "label": "Alto contexto", "emoji": "🌎"},
+                                {"clave": "bajo_contexto", "label": "Bajo contexto", "emoji": "🗣️"},
+                            ],
+                            "items": [
+                                {"texto": "El pasajero espera que el agente lea señales implícitas y contexto.", "correcta": "alto_contexto"},
+                                {"texto": "El pasajero expresa de forma directa lo que necesita y espera.", "correcta": "bajo_contexto"},
+                            ],
+                        },
+                    }
+                )
+            if nivel_data["numero"] == 5:
+                actividades.extend(
+                    [
+                        {
+                            "tipo": ActividadTipo.interactiva,
+                            "titulo": "Protocolo RND: gestiona una restricción",
+                            "contenido": {
+                                "descripcion": "Gestiona un caso de equipaje dañado sin prometer una compensación no garantizable.",
+                                "tipo_interactivo": "ordenar_pasos",
+                                "pasos": [
+                                    {"clave": "reconocer", "texto": "Reconocer el impacto para el pasajero."},
+                                    {"clave": "explicar", "texto": "Explicar la restricción con claridad."},
+                                    {"clave": "alternativa", "texto": "Ofrecer una alternativa real dentro de la autonomía."},
+                                    {"clave": "compromiso", "texto": "Definir un compromiso verificable."},
+                                    {"clave": "confirmar", "texto": "Confirmar comprensión y siguiente paso."},
+                                ],
+                            },
+                        },
+                        {
+                            "tipo": ActividadTipo.quiz,
+                            "titulo": "Quiz de aplicación: Protocolo RND",
+                            "contenido": {"descripcion": "Comprueba que puedes aplicar los cinco pasos sin usar políticas como única respuesta."},
+                            "preguntas": [
+                                {
+                                    "enunciado": "¿Qué debe hacer el agente después de explicar la restricción?",
+                                    "opciones": {"a": "Repetir la política", "b": "Ofrecer una alternativa real dentro de su autonomía", "c": "Cerrar la llamada"},
+                                    "respuesta_correcta": "b",
+                                },
+                                {
+                                    "enunciado": "¿Qué caracteriza un compromiso verificable?",
+                                    "opciones": {"a": "Tiene responsable y plazo", "b": "Depende de que alguien responda", "c": "No requiere confirmación"},
+                                    "respuesta_correcta": "a",
+                                },
+                            ],
+                        },
+                    ]
+                )
+
+            for orden, actividad_data in enumerate(actividades, start=1):
                 actividad = Actividad(
                     nivel_id=nivel.id,
                     tipo=actividad_data["tipo"],
@@ -807,15 +913,23 @@ def seed() -> None:
                     quiz = Quiz(actividad_id=actividad.id, aprobacion_minima=80)
                     db.add(quiz)
                     db.flush()
-                    db.add(
-                        Pregunta(
-                            quiz_id=quiz.id,
-                            orden=1,
-                            enunciado="[Pendiente: cargar preguntas reales del test original]",
-                            opciones={"a": "Pendiente", "b": "Pendiente"},
-                            respuesta_correcta="a",
+                    preguntas = actividad_data.get("preguntas") or [
+                        {
+                            "enunciado": "[Pendiente: cargar preguntas reales del test original]",
+                            "opciones": {"a": "Pendiente", "b": "Pendiente"},
+                            "respuesta_correcta": "a",
+                        }
+                    ]
+                    for pregunta_orden, pregunta in enumerate(preguntas, start=1):
+                        db.add(
+                            Pregunta(
+                                quiz_id=quiz.id,
+                                orden=pregunta_orden,
+                                enunciado=pregunta["enunciado"],
+                                opciones=pregunta["opciones"],
+                                respuesta_correcta=pregunta["respuesta_correcta"],
+                            )
                         )
-                    )
 
         db.commit()
         print(f"Sembrados {len(NIVELES)} niveles del Modelo CREA (async).")

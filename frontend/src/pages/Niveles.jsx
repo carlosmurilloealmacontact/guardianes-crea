@@ -70,6 +70,11 @@ export default function Niveles() {
               <span className="nivel-numero">Nivel {nivel.numero}</span>
               <h2>{nivel.nombre}</h2>
               {nivel.principio && <p className="nivel-principio">{nivel.principio}</p>}
+              {nivel.duracion_minutos && (
+                <p className="nivel-meta">
+                  {nivel.duracion_minutos} min · {nivel.momento === "post_sala" ? "Post-sala" : "Pre-sala"}
+                </p>
+              )}
 
               {disponible ? (
                 <div className="nivel-progreso">

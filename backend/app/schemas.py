@@ -52,6 +52,12 @@ class NivelOut(BaseModel):
     objetivo: str | None
     competencia: str | None
     estado: NivelEstado
+    codigo: str | None
+    duracion_minutos: int | None
+    momento: str | None
+    es_transversal: bool
+    requiere_certificacion_presencial: bool
+    conexion_sala: str | None
     actividades: list[ActividadOut] = []
 
     model_config = {"from_attributes": True}

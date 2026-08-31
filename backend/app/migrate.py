@@ -12,6 +12,19 @@ def migrate() -> None:
     Base.metadata.create_all(bind=engine)
     inspector = inspect(engine)
     with engine.begin() as connection:
+        nivel_columns = {column["name"] for column in inspector.get_columns("niveles")}
+        nivel_additions = {
+            "codigo": "VARCHAR(40)",
+            "duracion_minutos": "INTEGER",
+            "momento": "VARCHAR(30)",
+            "es_transversal": "BOOLEAN NOT NULL DEFAULT FALSE",
+            "requiere_certificacion_presencial": "BOOLEAN NOT NULL DEFAULT FALSE",
+            "conexion_sala": "TEXT",
+        }
+        for column, definition in nivel_additions.items():
+            if column not in nivel_columns:
+                connection.execute(text(f"ALTER TABLE niveles ADD COLUMN {column} {definition}"))
+
         quiz_columns = {column["name"] for column in inspector.get_columns("quizzes")}
         if "aprobacion_minima" not in quiz_columns:
             connection.execute(

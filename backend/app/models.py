@@ -72,6 +72,12 @@ class Nivel(Base):
     objetivo: Mapped[str | None] = mapped_column(Text, nullable=True)
     competencia: Mapped[str | None] = mapped_column(Text, nullable=True)
     estado: Mapped[NivelEstado] = mapped_column(Enum(NivelEstado), default=NivelEstado.gap)
+    codigo: Mapped[str | None] = mapped_column(String(40), nullable=True, unique=True)
+    duracion_minutos: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    momento: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    es_transversal: Mapped[bool] = mapped_column(Boolean, default=False)
+    requiere_certificacion_presencial: Mapped[bool] = mapped_column(Boolean, default=False)
+    conexion_sala: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     actividades: Mapped[list["Actividad"]] = relationship(
         back_populates="nivel", order_by="Actividad.orden"

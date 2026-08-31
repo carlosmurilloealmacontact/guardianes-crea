@@ -73,7 +73,14 @@ export default function NivelDetail() {
       <h1>
         Nivel {nivel.numero} — {nivel.nombre}
       </h1>
+      {nivel.duracion_minutos && (
+        <p className="nivel-meta">
+          {nivel.duracion_minutos} minutos · {nivel.momento === "post_sala" ? "Refuerzo post-sala" : "Preparación pre-sala"}
+          {nivel.requiere_certificacion_presencial ? " · Requiere certificación presencial" : ""}
+        </p>
+      )}
       {nivel.objetivo && <p className="nivel-objetivo">{nivel.objetivo}</p>}
+      {nivel.conexion_sala && <p className="nivel-conexion"><strong>Conexión con sala:</strong> {nivel.conexion_sala}</p>}
 
       <div className="nivel-layout">
         <ol className="actividades-lista">
