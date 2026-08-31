@@ -9,15 +9,23 @@ export default function Niveles() {
   const [progreso, setProgreso] = useState([]);
   const [refuerzos, setRefuerzos] = useState([]);
   const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
+  function cargarDatos() {
+    setCargando(true);
+    setError("");
     Promise.all([api.listarNiveles(token), api.miProgreso(token), api.misRefuerzosRnd(token)])
       .then(([niv, prog, rnd]) => {
         setNiveles(niv);
         setProgreso(prog);
         setRefuerzos(rnd);
       })
+      .catch(() => setError("No pudimos cargar tu ruta. Verifica tu conexión e inténtalo de nuevo."))
       .finally(() => setCargando(false));
+  }
+
+  useEffect(() => {
+    cargarDatos();
   }, [token]);
 
   function completadasEnNivel(nivel) {
@@ -28,6 +36,14 @@ export default function Niveles() {
   }
 
   if (cargando) return <p className="loading">Cargando niveles...</p>;
+  if (error) {
+    return (
+      <div className="page">
+        <p className="error">{error}</p>
+        <button type="button" onClick={cargarDatos}>Reintentar</button>
+      </div>
+    );
+  }
 
   const totalActividades = niveles.reduce((acc, n) => acc + n.actividades.length, 0);
   const totalCompletadas = niveles.reduce((acc, n) => acc + completadasEnNivel(n), 0);
