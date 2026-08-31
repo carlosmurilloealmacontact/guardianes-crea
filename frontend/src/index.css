@@ -1126,6 +1126,47 @@ input:focus {
   gap: 4px;
 }
 
+/* ---------- Ruta CREA y refuerzo espaciado ---------- */
+.nivel-meta,
+.nivel-conexion {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.nivel-conexion {
+  background: var(--purple-dark);
+  border-left: 4px solid var(--orange-light);
+  padding: 10px 12px;
+}
+
+.refuerzos-box {
+  margin-top: 28px;
+  background: var(--purple-dark);
+  border: 2px solid var(--gray);
+  padding: 18px;
+}
+
+.refuerzos-box h2,
+.refuerzos-box p {
+  margin-top: 0;
+}
+
+.refuerzos-box ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.refuerzos-box li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px;
+  background: var(--purple-darker);
+}
+
 @media (max-width: 720px) {
   .nivel-layout {
     grid-template-columns: 1fr;
