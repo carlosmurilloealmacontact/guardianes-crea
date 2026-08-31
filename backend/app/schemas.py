@@ -109,6 +109,16 @@ class ProgresoOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class RefuerzoOut(BaseModel):
+    id: int
+    numero_ronda: int
+    dias_despues: int
+    fecha_objetivo: datetime
+    estado: str
+
+    model_config = {"from_attributes": True}
+
+
 class CohorteCreate(BaseModel):
     nombre: str
     tipo: RutaTipo

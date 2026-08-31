@@ -1,8 +1,10 @@
+from datetime import datetime, timedelta
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, joinedload
 
 from app.database import get_db
-from app.models import Intento, Progreso, ProgresoEstado, Quiz, Usuario
+from app.models import Intento, Progreso, ProgresoEstado, Quiz, RefuerzoRND, Usuario
 from app.schemas import IntentoCreate, IntentoOut, QuizOut
 from app.security import get_current_user
 
@@ -90,6 +92,19 @@ def enviar_intento(
         db.add(registro_progreso)
     if aprobado:
         registro_progreso.estado = ProgresoEstado.completado
+        if quiz.actividad.nivel_id == 5:
+            for ronda, dias in enumerate((7, 15, 30), start=1):
+                existente = db.query(RefuerzoRND).filter(
+                    RefuerzoRND.usuario_id == usuario.id,
+                    RefuerzoRND.numero_ronda == ronda,
+                ).first()
+                if existente is None:
+                    db.add(RefuerzoRND(
+                        usuario_id=usuario.id,
+                        numero_ronda=ronda,
+                        dias_despues=dias,
+                        fecha_objetivo=datetime.utcnow() + timedelta(days=dias),
+                    ))
 
     db.commit()
     db.refresh(intento)

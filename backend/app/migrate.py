@@ -37,6 +37,16 @@ def migrate() -> None:
                 text("ALTER TABLE intentos ADD COLUMN aprobado BOOLEAN NOT NULL DEFAULT FALSE")
             )
 
+        if "refuerzos_rnd" not in inspector.get_table_names():
+            connection.execute(text(
+                "CREATE TABLE refuerzos_rnd (id INTEGER PRIMARY KEY, "
+                "usuario_id INTEGER NOT NULL, numero_ronda INTEGER NOT NULL, "
+                "dias_despues INTEGER NOT NULL, fecha_objetivo TIMESTAMP NOT NULL, "
+                "estado VARCHAR(20) NOT NULL DEFAULT 'pendiente', creado_en TIMESTAMP NOT NULL, "
+                "CONSTRAINT uq_refuerzo_rnd_usuario_ronda UNIQUE (usuario_id, numero_ronda), "
+                "FOREIGN KEY(usuario_id) REFERENCES usuarios(id))"
+            ))
+
     print("Migración aplicada correctamente.")
 
 

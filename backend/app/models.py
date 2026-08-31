@@ -184,3 +184,19 @@ class Progreso(Base):
     __table_args__ = (
         UniqueConstraint("usuario_id", "actividad_id", name="uq_progreso_usuario_actividad"),
     )
+
+
+class RefuerzoRND(Base):
+    __tablename__ = "refuerzos_rnd"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    usuario_id: Mapped[int] = mapped_column(ForeignKey("usuarios.id"))
+    numero_ronda: Mapped[int] = mapped_column(Integer)
+    dias_despues: Mapped[int] = mapped_column(Integer)
+    fecha_objetivo: Mapped[datetime] = mapped_column(DateTime)
+    estado: Mapped[str] = mapped_column(String(20), default="pendiente")
+    creado_en: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (
+        UniqueConstraint("usuario_id", "numero_ronda", name="uq_refuerzo_rnd_usuario_ronda"),
+    )

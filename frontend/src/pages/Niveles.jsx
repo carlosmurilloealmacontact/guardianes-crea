@@ -7,13 +7,15 @@ export default function Niveles() {
   const { token, logout } = useAuth();
   const [niveles, setNiveles] = useState([]);
   const [progreso, setProgreso] = useState([]);
+  const [refuerzos, setRefuerzos] = useState([]);
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    Promise.all([api.listarNiveles(token), api.miProgreso(token)])
-      .then(([niv, prog]) => {
+    Promise.all([api.listarNiveles(token), api.miProgreso(token), api.misRefuerzosRnd(token)])
+      .then(([niv, prog, rnd]) => {
         setNiveles(niv);
         setProgreso(prog);
+        setRefuerzos(rnd);
       })
       .finally(() => setCargando(false));
   }, [token]);
@@ -95,6 +97,19 @@ export default function Niveles() {
           );
         })}
       </div>
+      {refuerzos.length > 0 && (
+        <section className="refuerzos-box">
+          <h2>Refuerzo del Protocolo RND</h2>
+          <p>Completa las rondas espaciadas para consolidar el aprendizaje.</p>
+          <ul>
+            {refuerzos.map((refuerzo) => (
+              <li key={refuerzo.id}>
+                Ronda {refuerzo.numero_ronda} · {refuerzo.dias_despues} días · {refuerzo.estado}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }

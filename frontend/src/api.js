@@ -37,6 +37,7 @@ export const api = {
       token,
     }),
   miProgreso: (token) => request("/progreso/me", { token }),
+  misRefuerzosRnd: (token) => request("/progreso/refuerzos-rnd", { token }),
   obtenerQuiz: (id, token) => request(`/quizzes/${id}`, { token }),
   obtenerQuizPorActividad: (actividadId, token) =>
     request(`/quizzes/by-actividad/${actividadId}`, { token }),

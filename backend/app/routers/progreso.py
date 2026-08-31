@@ -2,11 +2,18 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import Actividad, Progreso, Usuario
-from app.schemas import ProgresoOut, ProgresoUpdate
+from app.models import Actividad, Progreso, RefuerzoRND, Usuario
+from app.schemas import ProgresoOut, ProgresoUpdate, RefuerzoOut
 from app.security import get_current_user
 
 router = APIRouter(prefix="/progreso", tags=["progreso"])
+
+
+@router.get("/refuerzos-rnd", response_model=list[RefuerzoOut])
+def mis_refuerzos_rnd(
+    db: Session = Depends(get_db), usuario: Usuario = Depends(get_current_user)
+) -> list[RefuerzoRND]:
+    return db.query(RefuerzoRND).filter(RefuerzoRND.usuario_id == usuario.id).order_by(RefuerzoRND.fecha_objetivo).all()
 
 
 @router.get("/me", response_model=list[ProgresoOut])
