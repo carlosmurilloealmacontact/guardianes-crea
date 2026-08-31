@@ -814,6 +814,16 @@ RUTA_METADATA = {
     },
 }
 
+QUIZ_CREA = {
+    1: [("¿Qué combinación forma una apertura efectiva?", {"a": "Saludo, nombre propio y validación breve", "b": "Saludo y transferencia inmediata", "c": "Solo pedir la reserva"}, "a")],
+    2: [("¿Cuál es una validación específica?", {"a": "Entiendo su molestia", "b": "Entiendo que perder la conexión afectó su reunión", "c": "No se preocupe"}, "b")],
+    3: [("El pasajero ya dio su número de vuelo. ¿Qué haces?", {"a": "Lo vuelves a pedir desde cero", "b": "Confirmas el dato y continúas", "c": "Ignoras el dato"}, "b")],
+    4: [("¿Qué señal indica mayor escalada emocional?", {"a": "Una pregunta puntual", "b": "Un agradecimiento", "c": "Repetición, tono elevado y palabras absolutas"}, "c")],
+    5: [("¿Qué debe seguir a la explicación de una restricción?", {"a": "Repetir la política", "b": "Ofrecer una alternativa real dentro de la autonomía", "c": "Cerrar el caso"}, "b"), ("¿Qué hace verificable un compromiso?", {"a": "Tiene responsable y plazo", "b": "Es una promesa abierta", "c": "No necesita confirmación"}, "a")],
+    6: [("¿Cuál es una resolución clara?", {"a": "Vamos a ver qué se puede hacer", "b": "En algún momento recibirá respuesta", "c": "Procesaré el cambio ahora; recibirá confirmación en 24 horas"}, "c")],
+    7: [("¿Cuándo tiene más sentido usar la pregunta anti-Silent Churn?", {"a": "En todo contacto, sin excepción", "b": "Cuando el caso no quedó resuelto y el pasajero sigue insatisfecho", "c": "Solo en consultas rutinarias"}, "b")],
+}
+
 
 def seed() -> None:
     Base.metadata.create_all(bind=engine)
@@ -898,6 +908,20 @@ def seed() -> None:
                     ]
                 )
 
+            if nivel_data["numero"] != 5 and not any(
+                actividad["tipo"] == ActividadTipo.quiz for actividad in actividades
+            ):
+                preguntas_quiz = [
+                    {"enunciado": enunciado, "opciones": opciones, "respuesta_correcta": correcta}
+                    for enunciado, opciones, correcta in QUIZ_CREA[nivel_data["numero"]]
+                ]
+                actividades.append({
+                    "tipo": ActividadTipo.quiz,
+                    "titulo": "Quiz de cierre CREA 2.0",
+                    "contenido": {"descripcion": "Aprueba con mínimo 80% para completar este módulo."},
+                    "preguntas": preguntas_quiz,
+                })
+
             for orden, actividad_data in enumerate(actividades, start=1):
                 actividad = Actividad(
                     nivel_id=nivel.id,
@@ -915,10 +939,14 @@ def seed() -> None:
                     db.flush()
                     preguntas = actividad_data.get("preguntas") or [
                         {
-                            "enunciado": "[Pendiente: cargar preguntas reales del test original]",
-                            "opciones": {"a": "Pendiente", "b": "Pendiente"},
-                            "respuesta_correcta": "a",
+                            "enunciado": enunciado,
+                            "opciones": opciones,
+                            "respuesta_correcta": respuesta_correcta,
                         }
+                        for enunciado, opciones, respuesta_correcta in QUIZ_CREA.get(
+                            nivel_data["numero"],
+                            [("[Pendiente: cargar preguntas reales del test original]", {"a": "Pendiente", "b": "Pendiente"}, "a")],
+                        )
                     ]
                     for pregunta_orden, pregunta in enumerate(preguntas, start=1):
                         db.add(
