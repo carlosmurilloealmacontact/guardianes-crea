@@ -1001,7 +1001,7 @@ def seed() -> None:
                         )
 
         db.commit()
-        print(f"Sembrados {len(NIVELES)} niveles del Modelo CREA (async).")
+        print(f"Sembradas {len(NIVELES) + 1} unidades de ruta del Modelo CREA 2.0 (async).")
     finally:
         db.close()
 
