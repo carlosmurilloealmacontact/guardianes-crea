@@ -16,6 +16,24 @@ def mis_refuerzos_rnd(
     return db.query(RefuerzoRND).filter(RefuerzoRND.usuario_id == usuario.id).order_by(RefuerzoRND.fecha_objetivo).all()
 
 
+@router.put("/refuerzos-rnd/{refuerzo_id}", response_model=RefuerzoOut)
+def completar_refuerzo_rnd(
+    refuerzo_id: int,
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(get_current_user),
+) -> RefuerzoRND:
+    refuerzo = db.query(RefuerzoRND).filter(
+        RefuerzoRND.id == refuerzo_id,
+        RefuerzoRND.usuario_id == usuario.id,
+    ).first()
+    if refuerzo is None:
+        raise HTTPException(status_code=404, detail="Refuerzo no encontrado")
+    refuerzo.estado = "completado"
+    db.commit()
+    db.refresh(refuerzo)
+    return refuerzo
+
+
 @router.get("/me", response_model=list[ProgresoOut])
 def mi_progreso(
     db: Session = Depends(get_db), usuario: Usuario = Depends(get_current_user)

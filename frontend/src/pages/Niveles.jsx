@@ -106,7 +106,23 @@ export default function Niveles() {
           <ul>
             {refuerzos.map((refuerzo) => (
               <li key={refuerzo.id}>
-                Ronda {refuerzo.numero_ronda} · {refuerzo.dias_despues} días · {refuerzo.estado}
+                <span>
+                  Ronda {refuerzo.numero_ronda} · {refuerzo.dias_despues} días · {refuerzo.estado}
+                </span>
+                {refuerzo.estado !== "completado" && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      api.completarRefuerzoRnd(refuerzo.id, token).then((actualizado) =>
+                        setRefuerzos((actuales) => actuales.map((item) =>
+                          item.id === actualizado.id ? actualizado : item
+                        ))
+                      )
+                    }
+                  >
+                    Completar ronda
+                  </button>
+                )}
               </li>
             ))}
           </ul>
