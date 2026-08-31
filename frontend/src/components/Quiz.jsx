@@ -36,6 +36,17 @@ export default function Quiz({ actividadId, onCompletado }) {
             ? "¡Bien hecho! Superaste el quiz."
             : `Necesitas ${quiz.aprobacion_minima}% para aprobar. Revisa el contenido y vuelve a intentarlo.`}
         </p>
+        {!resultado.aprobado && (
+          <button
+            type="button"
+            onClick={() => {
+              setRespuestas({});
+              setResultado(null);
+            }}
+          >
+            Intentar de nuevo
+          </button>
+        )}
       </div>
     );
   }
