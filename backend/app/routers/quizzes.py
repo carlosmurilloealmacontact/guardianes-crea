@@ -62,9 +62,14 @@ def enviar_intento(
         if payload.respuestas.get(str(pregunta.id)) == pregunta.respuesta_correcta
     )
     score = round((aciertos / total) * 100, 2) if total else 0.0
+    aprobado = score >= quiz.aprobacion_minima
 
     intento = Intento(
-        usuario_id=usuario.id, quiz_id=quiz_id, respuestas=payload.respuestas, score=score
+        usuario_id=usuario.id,
+        quiz_id=quiz_id,
+        respuestas=payload.respuestas,
+        score=score,
+        aprobado=aprobado,
     )
     db.add(intento)
 
@@ -83,7 +88,8 @@ def enviar_intento(
             actividad_id=quiz.actividad_id,
         )
         db.add(registro_progreso)
-    registro_progreso.estado = ProgresoEstado.completado
+    if aprobado:
+        registro_progreso.estado = ProgresoEstado.completado
 
     db.commit()
     db.refresh(intento)

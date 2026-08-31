@@ -19,7 +19,7 @@ export default function Quiz({ actividadId, onCompletado }) {
     try {
       const intento = await api.enviarIntento(quiz.id, respuestas, token);
       setResultado(intento);
-      onCompletado?.(`Quiz completado: ${intento.score}%`);
+      if (intento.aprobado) onCompletado?.(`Quiz aprobado: ${intento.score}%`);
     } finally {
       setEnviando(false);
     }
@@ -32,9 +32,9 @@ export default function Quiz({ actividadId, onCompletado }) {
       <div className="quiz-resultado">
         <h3>Resultado: {resultado.score}%</h3>
         <p>
-          {resultado.score >= 70
+          {resultado.aprobado
             ? "¡Bien hecho! Superaste el quiz."
-            : "Revisa el contenido del nivel y vuelve a intentarlo cuando quieras."}
+            : `Necesitas ${quiz.aprobacion_minima}% para aprobar. Revisa el contenido y vuelve a intentarlo.`}
         </p>
       </div>
     );

@@ -69,6 +69,7 @@ class PreguntaOut(BaseModel):
 class QuizOut(BaseModel):
     id: int
     actividad_id: int
+    aprobacion_minima: int
     preguntas: list[PreguntaOut] = []
 
     model_config = {"from_attributes": True}
@@ -81,6 +82,7 @@ class IntentoCreate(BaseModel):
 class IntentoOut(BaseModel):
     id: int
     score: float
+    aprobado: bool
     creado_en: datetime
     respuestas: dict
 

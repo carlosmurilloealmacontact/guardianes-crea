@@ -6,6 +6,7 @@ from sqlalchemy import (
     Enum,
     ForeignKey,
     Integer,
+    Boolean,
     JSON,
     String,
     Text,
@@ -100,6 +101,7 @@ class Quiz(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     actividad_id: Mapped[int] = mapped_column(ForeignKey("actividades.id"), unique=True)
+    aprobacion_minima: Mapped[int] = mapped_column(Integer, default=80)
 
     actividad: Mapped["Actividad"] = relationship(back_populates="quiz")
     preguntas: Mapped[list["Pregunta"]] = relationship(
@@ -129,6 +131,7 @@ class Intento(Base):
     quiz_id: Mapped[int] = mapped_column(ForeignKey("quizzes.id"))
     respuestas: Mapped[dict] = mapped_column(JSON)
     score: Mapped[float] = mapped_column(Integer)
+    aprobado: Mapped[bool] = mapped_column(Boolean, default=False)
     creado_en: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     usuario: Mapped["Usuario"] = relationship(back_populates="intentos")

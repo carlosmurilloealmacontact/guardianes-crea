@@ -804,7 +804,7 @@ def seed() -> None:
                 db.flush()
 
                 if actividad.tipo == ActividadTipo.quiz:
-                    quiz = Quiz(actividad_id=actividad.id)
+                    quiz = Quiz(actividad_id=actividad.id, aprobacion_minima=80)
                     db.add(quiz)
                     db.flush()
                     db.add(

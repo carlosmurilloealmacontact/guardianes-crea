@@ -20,7 +20,12 @@ LMS para formación asíncrona individual de agentes de un contact center de aer
   - `src/context/AuthContext.jsx`: token persistido en `localStorage`.
   - `src/api.js`: cliente HTTP del backend.
 - `Imagenes/`: recursos originales; los recursos servidos por la app están copiados en `frontend/public/brand/`.
-- `PROPUESTA.md`: especificación funcional y pedagógica de referencia.
+- `PROPUESTA.md`: propuesta técnica y pedagógica inicial del proyecto.
+- `CREA_2.0_Ruta_Elearning.docx` (fuera del repositorio, entregado por el usuario): guía funcional vigente de implementación de CREA 2.0; es la referencia principal para módulos, objetivos, secuencia, modalidad y criterios pedagógicos.
+
+## Jerarquía de referencia funcional
+
+La guía CREA 2.0 tiene prioridad sobre la propuesta inicial cuando exista una diferencia. El producto debe implementar esa guía y puede conservar o agregar actividades propias siempre que complementen sus objetivos, no cambien la secuencia ni contradigan sus criterios. Las decisiones nuevas deben documentarse antes de alterar la ruta formativa.
 
 ## Stack y configuración
 
@@ -62,7 +67,7 @@ Endpoints principales: `POST /auth/register`, `POST /auth/login`, `GET /niveles`
 
 ## Contenido y estado funcional
 
-El seed define siete niveles del Modelo CREA. Los niveles 1–6 tienen actividades cargadas; el seed documenta el Nivel 7 como `gap` por contenido incompleto. El Nivel 1 tiene estructura cargada aunque la fuente original no lo describía completamente. Hay videos, quizzes y actividades como Stroop, clasificador, mapa de empatía, semáforo, memoria, ordenamiento, respuesta cronometrada, dibujo a ciegas y llamada simulada.
+El seed define siete niveles del Modelo CREA. Los niveles 1–7 tienen actividades cargadas; la guía CREA 2.0 organiza además un eje transversal de sensibilidad intercultural y define el recorrido como complementario a la formación presencial. El estado actual combina la ruta de la propuesta inicial con actividades propias como Stroop, clasificador, mapa de empatía, semáforo, memoria, ordenamiento, respuesta cronometrada, dibujo a ciegas y llamada simulada. La siguiente evolución debe contrastar cada nivel con la guía vigente y conservar esas actividades como extensiones pedagógicas válidas.
 
 El MVP del portal de agente está operativo. El contenido audiovisual real está incompleto y algunos videos usan placeholders o solo descripción. El panel de administración/supervisión aún no está implementado. No hay suite de tests automatizados visible en este proyecto.
 
@@ -79,4 +84,4 @@ El MVP del portal de agente está operativo. El contenido audiovisual real está
 
 ## Próximos pasos naturales
 
-Completar y validar contenido de los niveles faltantes, reemplazar placeholders por assets reales, mejorar persistencia/criterios de resultados de actividades, crear panel admin/supervisor, añadir migraciones y pruebas, y endurecer autenticación, CORS y permisos antes de producción.
+Implementar la guía CREA 2.0 como ruta canónica, incorporando el eje intercultural, el Protocolo RND, los objetivos y criterios de aprobación definidos allí; después integrar las actividades propias que los complementen. También completar y validar contenido, reemplazar placeholders por assets reales, mejorar persistencia/criterios de resultados, crear panel admin/supervisor, añadir migraciones y pruebas, y endurecer autenticación, CORS y permisos antes de producción.
