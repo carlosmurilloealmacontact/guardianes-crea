@@ -71,7 +71,7 @@ export default function NivelDetail() {
         ← Volver a niveles
       </Link>
       <h1>
-        Nivel {nivel.numero} — {nivel.nombre}
+        {nivel.es_transversal ? "Eje transversal" : `Módulo ${nivel.codigo?.replace("M", "") || nivel.numero}`} — {nivel.nombre}
       </h1>
       {nivel.duracion_minutos && (
         <p className="nivel-meta">

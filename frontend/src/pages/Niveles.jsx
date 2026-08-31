@@ -69,7 +69,9 @@ export default function Niveles() {
               {disponible && total > 0 && completadas === total && (
                 <img src="/brand/badge.png" alt="Nivel completado" className="nivel-badge-icono" />
               )}
-              <span className="nivel-numero">Nivel {nivel.numero}</span>
+              <span className="nivel-numero">
+                {nivel.es_transversal ? "Eje transversal" : `Módulo ${nivel.codigo?.replace("M", "") || nivel.numero}`}
+              </span>
               <h2>{nivel.nombre}</h2>
               {nivel.principio && <p className="nivel-principio">{nivel.principio}</p>}
               {nivel.duracion_minutos && (
