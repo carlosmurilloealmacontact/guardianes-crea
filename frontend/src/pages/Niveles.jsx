@@ -40,7 +40,12 @@ export default function Niveles() {
     return (
       <div className="page">
         <p className="error">{error}</p>
-        <button type="button" onClick={cargarDatos}>Reintentar</button>
+        <div className="error-actions">
+          <button type="button" onClick={cargarDatos}>Reintentar</button>
+          <button type="button" className="link-button" onClick={logout}>
+            Volver al inicio de sesión
+          </button>
+        </div>
       </div>
     );
   }
